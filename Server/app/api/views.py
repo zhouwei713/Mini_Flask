@@ -13,13 +13,15 @@ from flask import jsonify, request
 import requests
 import json
 from ..tools import token, redis_connection, cut
+import time
 
 
 rd = redis_connection.redis_conn_pool()
 
 
 def zhihudata():
-    update_time = rd.get('new_update_time')
+    current_time = time.strftime('%Y-%m-%d 00:00:00', time.localtime())
+    update_time = rd.get('new_update_time') or current_time
     zhihumetrics_data = ZhihuMetrics.query.filter(ZhihuMetrics.update_time > update_time).all()
     metrics_list = db_opera.db_to_list(zhihumetrics_data)
     details_list = []
